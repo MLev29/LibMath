@@ -29,7 +29,7 @@ add_library(${TARGET_NAME})
 target_sources(${TARGET_NAME} PRIVATE ${TARGET_FILES})
 
 target_include_directories(${TARGET_NAME} 
-	PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/private
+	PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/private
 	PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/public/internal
 	PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/public/LibMath
 )
