@@ -1,0 +1,10 @@
+# top-most EditorConfig file
+root = true
+
+[*.{c,h,cpp,hpp}]
+charset = utf-8
+end_of_line = lf
+indent_size = 4
+indent_style = tabs
+max_line_length = 132
+trim_trailing_whitespace = true
