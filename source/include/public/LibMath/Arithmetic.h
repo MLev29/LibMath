@@ -4,6 +4,12 @@
 
 #include <cmath>
 #include <exception>
+#include <assert.h>
+
+#ifdef _MSC_VER
+	// Prevent warning due to loss of data from implicit type conversion
+	#pragma warning(disable: 4244) 
+#endif
 
 /*
 *	Arithmetic Operations
@@ -27,10 +33,10 @@ namespace math
 	inline constexpr T Abs(T val) noexcept;
 
 	template<math_type::NumericType T>
-	inline constexpr T Min(T const& val1, T const& val2);
+	inline constexpr T Min(T const& val1, T const& val2) noexcept;
 	
 	template<math_type::NumericType T>
-	inline constexpr T Max(T const& val1, T const& val2);
+	inline constexpr T Max(T const& val1, T const& val2) noexcept;
 	
 	template<math_type::NumericType T>
 	inline constexpr T Clamp(T const& val, T const& min, T const& max);
@@ -64,13 +70,13 @@ constexpr T math::Abs(T const val) noexcept
 }
 
 template<math::math_type::NumericType T>
-constexpr T math::Min(T const& val1, T const& val2)
+constexpr T math::Min(T const& val1, T const& val2) noexcept
 {
 	return (val1 < val2) ? val1 : val2;
 }
 
 template<math::math_type::NumericType T>
-constexpr T math::Max(T const& val1, T const& val2)
+constexpr T math::Max(T const& val1, T const& val2) noexcept
 {
 	return (val1 > val2) ? val1 : val2;
 }
@@ -78,13 +84,21 @@ constexpr T math::Max(T const& val1, T const& val2)
 template<math::math_type::NumericType T>
 constexpr T math::Clamp(T const& val, T const& min, T const& max)
 {
-	val = Max(min, val);
-	val = Min(max, val);
+	_ASSERT(min <= max);
+
+	if (val < min)
+		return min;
+	else if (val > max)
+		return max;
+
+	return val;
 }
 
 template<math::math_type::NumericType T>
 constexpr T math::Wrap(T const& val, T const& min, T const& max)
 {
+	_ASSERT(min <= max);
+
 	// Check if number is within the range
 	if (val >= min && val <= max)
 		return val;
@@ -125,13 +139,13 @@ constexpr int math::Floor(T const& val) noexcept
 	int integer = static_cast<int>(val);
 
 	// Check if the value's decimal is equal to .0f
-	bool isInt = (val - integer) == 0.0f;
+	bool isInt = (val - static_cast<T>(integer)) == 0.0f;
 
 	if (integer < 0 && !isInt)
 		--integer;
 
 	// Return value if number is already an integer otherwise cast as type
-	return isInt ? val : static_cast<T>(integer);
+	return isInt ? val : integer;
 }
 
 template<math::math_type::NumericType T>
@@ -178,10 +192,12 @@ constexpr T math::Root(T const& val, Tindex const& index) noexcept
 template<math::math_type::NumericType T>
 constexpr T math::Factorial(T const& val)
 {
-	T result = val;
+	T result = 1;
 
-	for (int i = 0; i <= math::Abs(val); ++i)
-		result *= (i + 1);
+	for (int i = result; i <= math::Abs(val); ++i)
+		result *= i;
 
-	return result;
+	return (result < 0) ? -result : result;
 }
+
+namespace LibMath = math;
