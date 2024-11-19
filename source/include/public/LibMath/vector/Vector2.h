@@ -15,7 +15,6 @@
 *	- Zero			DONE
 * 
 *	Functions:
-*	- Distance		DONE
 *	- Dot			DONE
 *	- Magnitude		DONE
 *	- Normalize		DONE
@@ -33,7 +32,7 @@
 *	- Subtract	(-, -=)				DONE
 *	- Multiply	(*, *=)				DONE
 *	- Divide	(/, /=)				DONE
-*	- Compare	(epsilon test)		
+*	- Compare	(epsilon test)		DONE
 *	- Index		(index operator)	DONE
 *
 *	To Do:
@@ -108,64 +107,49 @@ namespace math
 	template<math_type::NumericType T>
 	inline math::Vector2<T> math::Vector2<T>::Up(void) noexcept
 	{
-		return Vector2(
-			reinterpret_cast<T>(0.0f),
-			reinterpret_cast<T>(1.0f)
-		);
+		return Vector2(0.0f, 1.0f);
 	}
 
 	template<math_type::NumericType T>
 	inline math::Vector2<T> math::Vector2<T>::Down(void) noexcept
 	{
-		return Vector2(
-			reinterpret_cast<T>(0.0f),
-			reinterpret_cast<T>(-1.0f)
-		);
+		return Vector2(0.0f, -1.0f);
 	}
 
 	template<math_type::NumericType T>
 	inline math::Vector2<T> math::Vector2<T>::Left(void) noexcept
 	{
-		return Vector2(
-			reinterpret_cast<T>(-1.0f),
-			reinterpret_cast<T>(0.0f)
-		);
+		return Vector2<T>(-1.0f, 0.0f);
 	}
 
 	template<math_type::NumericType T>
 	inline math::Vector2<T> math::Vector2<T>::Right(void) noexcept
 	{
-		return Vector2(
-			reinterpret_cast<T>(1.0f),
-			reinterpret_cast<T>(0.0f)
-		);
+		return Vector2<T>(1.0f, 0.0f);
 	}
 
 	template<math_type::NumericType T>
 	inline math::Vector2<T> math::Vector2<T>::Zero(void) noexcept
 	{
-		return Vector2(
-			reinterpret_cast<T>(0.0f),
-			reinterpret_cast<T>(0.0f)
-		);
+		return Vector2(0.0f, 0.0f);
 	}
 
 	template<math::math_type::NumericType T>
 	SPECIFIER T math::Vector2<T>::Cross(math::Vector2<T> const& vec2)
 	{
-		return SPECIFIER (m_x * vec2.m_y) - (m_y * vec2.m_x);
+		return (m_x * vec2.m_y) - (m_y * vec2.m_x);
 	}
 
 	template<math::math_type::NumericType T>
 	SPECIFIER T math::Vector2<T>::Dot(math::Vector2<T> const& vec2)
 	{	
-		return SPECIFIER (m_x * vec2.m_x) + (m_y * vec2.m_y);
+		return (m_x * vec2.m_x) + (m_y * vec2.m_y);
 	}
 
 	template<math::math_type::NumericType T>
 	SPECIFIER T math::Vector2<T>::Magnitude(void)
 	{
-		return SPECIFIER T(sqrtf(Dot(*this));
+		return T(sqrtf(Dot(*this));
 	}
 
 	template<math::math_type::NumericType T>
@@ -173,7 +157,7 @@ namespace math
 	{
 		const T denominator = 1.0f / Dot(*this);
 
-		return SPECIFIER Vector2<T>(
+		return Vector2<T>(
 			m_x * denominator,
 			m_y * denominator
 		);
@@ -211,21 +195,21 @@ namespace math
 	template<math::math_type::NumericType T>
 	SPECIFIER bool math::Vector2<T>::IsUnit(void)
 	{
-		return SPECIFIER (static_cast<float>(Magnitude()) == 1.0f);
+		return (static_cast<float>(Magnitude()) == 1.0f);
 	}
 
 	template<math::math_type::NumericType T>
 	SPECIFIER Vector2<T> Vector2<T>::Reflect(Vector2<T> const& vec2)
 	{
 		// TODO: finish reflect
-		return SPECIFIER Vector2<T>();
+		return Vector2<T>();
 	}
 
 	template<math::math_type::NumericType T>
 	SPECIFIER Vector2<T> Vector2<T>::Project(Vector2<T> const& vec2)
 	{
 		// TODO: Finish project
-		return SPECIFIER Vector2<T>();
+		return Vector2<T>();
 	}
 
 	template<math::math_type::NumericType T>
@@ -260,7 +244,7 @@ namespace math
 	template<math::math_type::NumericType T>
 	SPECIFIER math::Vector2<T> math::Vector2<T>::operator+(Vector2<T> const& vec2)
 	{
-		return SPECIFIER Vector2<T>(
+		return Vector2<T>(
 			m_x + vec2.m_x,
 			m_y + vec2.m_y
 		);
@@ -269,7 +253,7 @@ namespace math
 	template<math::math_type::NumericType T>
 	SPECIFIER math::Vector2<T> math::Vector2<T>::operator-(Vector2<T> const& vec2)
 	{
-		return SPECIFIER Vector2<T>(
+		return Vector2<T>(
 			m_x - vec2.m_x,
 			m_y - vec2.m_y
 		);
@@ -278,7 +262,7 @@ namespace math
 	template<math::math_type::NumericType T>
 	SPECIFIER Vector2<T> Vector2<T>::operator*(Vector2<T> const& vec2)
 	{
-		return SPECIFIER Vector2<T>(
+		return Vector2<T>(
 			m_x * vec2.m_x,
 			m_y * vec2.m_y
 		);
@@ -290,7 +274,7 @@ namespace math
 		_ASSERT(vec2.m_x != 0);
 		_ASSERT(vec2.m_y != 0);
 
-		return SPECIFIER Vector2<T>(
+		return Vector2<T>(
 			m_x / vec2.m_x,
 			m_y / vec2.m_y
 		);
@@ -301,14 +285,14 @@ namespace math
 	{
 		*this = *this + vec2;
 
-		return SPECIFIER *this;
+		return *this;
 	}
 	template<math::math_type::NumericType T>
 	SPECIFIER Vector2<T>& Vector2<T>::operator-=(Vector2<T> const& vec2)
 	{
 		*this = *this - vec2;
 
-		return SPECIFIER *this;
+		return *this;
 	}
 
 	template<math::math_type::NumericType T>
@@ -316,7 +300,7 @@ namespace math
 	{
 		*this = *this * vec2;
 
-		return SPECIFIER *this;
+		return *this;
 	}
 
 	template<math::math_type::NumericType T>
@@ -324,7 +308,7 @@ namespace math
 	{
 		*this = *this / vec2;
 
-		return SPECIFIER * this;
+		return *this;
 	}
 
 	template<math::math_type::NumericType T>
@@ -340,7 +324,7 @@ namespace math
 	{
 		_ASSERT(index >= 0 && index <= 1);
 
-		return SPECIFIER reinterpret_cast<const T*>(this)[index];
+		return reinterpret_cast<const T*>(this)[index];
 	}
 
 	template<math::math_type::NumericType T>
@@ -348,10 +332,8 @@ namespace math
 	{
 		_ASSERT(index >= 0 && index <= 1);
 
-		return SPECIFIER reinterpret_cast<T*>(this)[index];
+		return reinterpret_cast<T*>(this)[index];
 	}
 }
-
-
 
 namespace LibMath = math;
