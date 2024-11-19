@@ -2,6 +2,7 @@
 
 #include "VariableType.hpp"
 #include "Macros.h"
+#include "Arithmetic.h"
 
 #include <cmath>
 /* 
@@ -329,8 +330,9 @@ namespace math
 	template<math::math_type::NumericType T>
 	SPECIFIER bool Vector2<T>::operator==(Vector2<T> const& vec2)
 	{
-		// TODO: add epsilon test
-		return SPECIFIER bool(false);
+		return
+			math::AlmostEqual(m_x, vec2.m_x) &&
+			math::AlmostEqual(m_y, vec2.m_y);
 	}
 
 	template<math::math_type::NumericType T>
