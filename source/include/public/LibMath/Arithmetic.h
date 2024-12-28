@@ -15,6 +15,7 @@
 /*
 *	Arithmetic Operations
 *	Absolute					DONE
+*	Almost Equal (epsilon)		DONE
 *	Min (2 numbers & array)		DONE
 *	Max (2 numbers & array)		DONE
 *	Clamp						DONE
@@ -177,6 +178,9 @@ template<math::math_type::NumericType T>
 constexpr T math::Power(T const& val, unsigned int const power)
 {
 	T result = val;
+
+	if (power == 0)
+		return static_cast<T>(1);
 
 	for (unsigned int i = 1; i < power; ++i)
 		result *= val;
