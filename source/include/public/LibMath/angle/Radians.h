@@ -10,18 +10,19 @@
 *	Radians
 *
 *	Constructors
-*	- void
-*	- value
-* 
+*	- void				DONE
+*	- value				DONE
+*
 *	Functions
-*	- Wrap
-*	- Limit
+*	- Wrap				DONE
+*	- Limit				REMOVED
+*	- Value				DONE
 * 
 *	Operators
-*	- Addition
-*	- Subtraction
-*	- Equality
-*	- Inverse equality
+*	- Addition			DONE
+*	- Subtraction		DONE
+*	- Equality			DONE
+*	- Inverse equality	DONE
 */
 
 
@@ -41,20 +42,20 @@ namespace math
 		T&			Value(void);
 
 		Radian<T>	operator+(T const value);
-		Radian<T>	operator+(Radian<T> const radian);
+		Radian<T>	operator+(Radian<T> const& radian);
 		Radian<T>	operator-(T const value);
-		Radian<T>	operator-(Radian<T> const radian);
+		Radian<T>	operator-(Radian<T> const& radian);
 		Radian<T>	operator*(T const value);
 		Radian<T>	operator/(T const value);
 		Radian<T>&	operator+=(T const value);
-		Radian<T>&	operator+=(Radian<T> const radian);
+		Radian<T>&	operator+=(Radian<T> const& radian);
 		Radian<T>&	operator-=(T const value);
-		Radian<T>&	operator-=(Radian<T> const radian);
+		Radian<T>&	operator-=(Radian<T> const& radian);
 
-		bool		operator==(Radian const radian) const noexcept;
-		bool		operator!=(Radian const radian) const noexcept;
+		bool		operator==(Radian const& radian) const noexcept;
+		bool		operator!=(Radian const& radian) const noexcept;
 	private:
-		T m_angle;
+		T m_angle = 0;
 	};
 
 	template<math::math_type::NumericType T>
@@ -92,7 +93,7 @@ namespace math
 	}
 
 	template<math::math_type::NumericType T>
-	inline math::Radian<T> Radian<T>::operator+(math::Radian<T> const radian)
+	inline math::Radian<T> Radian<T>::operator+(math::Radian<T> const& radian)
 	{
 		return Radian(m_angle + radian.m_angle);
 	}
@@ -104,7 +105,7 @@ namespace math
 	}
 
 	template<math::math_type::NumericType T>
-	inline Radian<T> Radian<T>::operator-(Radian<T> const radian)
+	inline Radian<T> Radian<T>::operator-(Radian<T> const& radian)
 	{
 		return Radian<T>(m_angle - radian.m_angle);
 	}
@@ -132,7 +133,7 @@ namespace math
 	}
 
 	template<math::math_type::NumericType T>
-	inline Radian<T>& Radian<T>::operator+=(Radian<T> const radian)
+	inline Radian<T>& Radian<T>::operator+=(Radian<T> const& radian)
 	{
 		m_angle += radian.m_angle;
 
@@ -148,7 +149,7 @@ namespace math
 	}
 
 	template<math::math_type::NumericType T>
-	inline Radian<T>& Radian<T>::operator-=(Radian<T> const radian)
+	inline Radian<T>& Radian<T>::operator-=(Radian<T> const& radian)
 	{
 		m_angle -= radian.m_angle;
 
@@ -156,16 +157,16 @@ namespace math
 	}
 
 	template<math::math_type::NumericType T>
-	inline bool Radian<T>::operator==(Radian const radian) const noexcept
+	inline bool Radian<T>::operator==(Radian const& radian) const noexcept
 	{
-		
-
-		return m_angle == radian.m_angle;
+		return math::AlmostEqual(m_angle, radian.m_angle, (T) INNACURATE_EPSILON);
 	}
 
 	template<math::math_type::NumericType T>
-	inline bool Radian<T>::operator!=(Radian const radian) const noexcept
+	inline bool Radian<T>::operator!=(Radian const& radian) const noexcept
 	{
-		return m_angle != radian.m_angle;
+		return !math::AlmostEqual(m_angle, radian.m_angle);
 	}
 }
+
+namespace LibMath = math;

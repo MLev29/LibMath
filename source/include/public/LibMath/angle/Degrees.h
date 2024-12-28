@@ -27,7 +27,6 @@
 	- Inverse equality	DONE
 */
 
-
 namespace math
 {
 	template<math::math_type::NumericType T>
@@ -44,20 +43,20 @@ namespace math
 		T&			Value(void);
 
 		Degree<T>	operator+(T const value);
-		Degree<T>	operator+(Degree<T> const value);
+		Degree<T>	operator+(Degree<T> const& value);
 		Degree<T>	operator-(T const value);
-		Degree<T>	operator-(Degree<T> const value);
+		Degree<T>	operator-(Degree<T> const& value);
 		Degree<T>	operator*(T const value);
 		Degree<T>	operator/(T const value);
 		Degree<T>&	operator+=(T const value);
-		Degree<T>&	operator+=(Degree<T> const value);
+		Degree<T>&	operator+=(Degree<T> const& value);
 		Degree<T>&	operator-=(T const value);
-		Degree<T>&	operator-=(Degree<T> const value);
+		Degree<T>&	operator-=(Degree<T> const& value);
 
-		bool		operator==(Degree const Degree) const noexcept;
-		bool		operator!=(Degree const Degree) const noexcept;
+		bool		operator==(Degree<T> const& Degree) const noexcept;
+		bool		operator!=(Degree<T> const& Degree) const noexcept;
 	private:
-		T m_angle;
+		T m_angle = 0;
 	};
 
 	template<math::math_type::NumericType T>
@@ -95,7 +94,7 @@ namespace math
 	}
 
 	template<math::math_type::NumericType T>
-	inline Degree<T> Degree<T>::operator+(Degree<T> const value)
+	inline Degree<T> Degree<T>::operator+(Degree<T> const& value)
 	{
 		return Degree<T>(m_angle + value.m_angle);
 	}
@@ -107,7 +106,7 @@ namespace math
 	}
 
 	template<math::math_type::NumericType T>
-	inline Degree<T> Degree<T>::operator-(Degree<T> const value)
+	inline Degree<T> Degree<T>::operator-(Degree<T> const& value)
 	{
 		return Degree<T>(m_angle - value.m_angle);
 	}
@@ -135,7 +134,7 @@ namespace math
 	}
 
 	template<math::math_type::NumericType T>
-	inline Degree<T>& Degree<T>::operator+=(Degree<T> const value)
+	inline Degree<T>& Degree<T>::operator+=(Degree<T> const& value)
 	{
 		m_angle += value.m_angle;
 
@@ -151,7 +150,7 @@ namespace math
 	}
 
 	template<math::math_type::NumericType T>
-	inline Degree<T>& Degree<T>::operator-=(Degree<T> const value)
+	inline Degree<T>& Degree<T>::operator-=(Degree<T> const& value)
 	{
 		m_angle -= value.m_angle;
 
@@ -159,14 +158,18 @@ namespace math
 	}
 
 	template<math::math_type::NumericType T>
-	inline bool Degree<T>::operator==(Degree const Degree) const noexcept
+	inline bool Degree<T>::operator==(Degree<T> const& Degree) const noexcept
 	{
-		return m_angle == Degree.m_angle;
+		bool result = math::AlmostEqual(m_angle, Degree.m_angle);
+
+		return result;
 	}
 
 	template<math::math_type::NumericType T>
-	inline bool Degree<T>::operator!=(Degree const Degree) const noexcept
+	inline bool Degree<T>::operator!=(Degree<T> const& Degree) const noexcept
 	{
-		return m_angle != Degree.m_angle;
+		return !math::AlmostEqual(m_angle, Degree.m_angle);
 	}
 }
+
+namespace LibMath = math;
