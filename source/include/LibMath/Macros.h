@@ -9,5 +9,7 @@
 
 #define E_CONSTANT 2.718281828f	// Float e
 
+#define INNACURATE_EPSILON 0.0001f
+
 // Physics
 #define GRAVITY_CONSTANT 9.81f	// Float earth gravity constant

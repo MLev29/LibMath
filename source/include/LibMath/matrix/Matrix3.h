@@ -35,6 +35,7 @@
 *	- Addition				DONE
 *	- Subtraction			DONE
 *	- Multiplication		DONE
+*	- Division (scalar)		DONE
 *	- Equality				DONE
 *	- Inverse equality		DONE
 * 
@@ -51,7 +52,7 @@ namespace math
 	public:
 							Matrix3(void);
 							Matrix3(T scalar);
-							Matrix3(T* arr);
+							Matrix3(T const arr[9]);
 
 							~Matrix3(void) = default;
 
@@ -66,21 +67,22 @@ namespace math
 
 		static	Matrix3<T>	RollPitchYawRotation(Radian<T> const& thetaX, Radian<T> const& thetaY, Radian<T> const& thetaZ);
 
-				Matrix3<T>&	operator=(const T[][3] arr);
-				Matrix3<T>&	operator=(const T[9] arr);
+				Matrix3<T>&	operator=(const T arr[][3]);
+				Matrix3<T>&	operator=(const T arr[9]);
 				Matrix3<T>	operator+(Matrix3<T> const& matrix);
 				Matrix3<T>	operator-(Matrix3<T> const& matrix);
 				Matrix3<T>	operator*(Matrix3<T> const& matrix);
 				Matrix3<T>	operator*(T scalar);
+				Matrix3<T>	operator/(T scalar);
 				Matrix3<T>&	operator+=(Matrix3<T> const& matrix);
 				Matrix3<T>&	operator-=(Matrix3<T> const& matrix);
 				Matrix3<T>&	operator*=(Matrix3<T> const& matrix);
 				Matrix3<T>&	operator*=(T scalar);
+				Matrix3<T>&	operator/=(T scalar);
 
 				bool		operator==(Matrix3<T> const& matrix) const noexcept;
 				bool		operator!=(Matrix3<T> const& matrix) const noexcept;
 
-	//private:
 		T m_matrix[3][3];
 	};
 
@@ -88,61 +90,52 @@ namespace math
 	template<math::math_type::NumericType T>
 	inline Matrix3<T>::Matrix3(void)
 	{
-		m_matrix =
-		{
-			{1, 0, 0},
-			{0, 1, 0},
-			{0, 0, 1}
-		};
+		m_matrix[0][0] = 1; m_matrix[0][1] = 0; m_matrix[0][2] = 0;
+		m_matrix[1][0] = 0; m_matrix[1][1] = 1; m_matrix[1][2] = 0;
+		m_matrix[2][0] = 0; m_matrix[2][1] = 0; m_matrix[2][2] = 1;
 	}
 
 	template<math::math_type::NumericType T>
 	inline Matrix3<T>::Matrix3(T scalar)
 	{
-		m_matrix =
-		{
-			{scalar, 0, 0},
-			{0, scalar, 0},
-			{0, 0, scalar}
-		};
+		*this = Matrix3<T>() * scalar;
 	}
 
 	template<math::math_type::NumericType T>
-	inline Matrix3<T>::Matrix3(T* arr)
+	inline Matrix3<T>::Matrix3(T const arr[9])
 	{
-		m_matrix =
-		{
-			{arr[0], arr[1], arr[2]},
-			{arr[3], arr[4], arr[5]},
-			{arr[6], arr[7], arr[8]}
-		};
+#ifndef COLUMN_MAJOR
+		m_matrix[0][0] = arr[0]; m_matrix[0][1] = arr[1]; m_matrix[0][2] = arr[2];
+		m_matrix[1][0] = arr[3]; m_matrix[1][1] = arr[4]; m_matrix[1][2] = arr[5];
+		m_matrix[2][0] = arr[6]; m_matrix[2][1] = arr[7]; m_matrix[2][2] = arr[8];
+#else
+		m_matrix[0][0] = arr[0]; m_matrix[0][1] = arr[3]; m_matrix[0][2] = arr[6];
+		m_matrix[1][0] = arr[1]; m_matrix[1][1] = arr[4]; m_matrix[1][2] = arr[7];
+		m_matrix[2][0] = arr[2]; m_matrix[2][1] = arr[5]; m_matrix[2][2] = arr[8];
+#endif
 	}
 
 	template<math::math_type::NumericType T>
 	inline Matrix3<T>& Matrix3<T>::GetMatrix3(Matrix4<T> const& matrix, int row, int column)
 	{
-		int iOffset = 0;
-		int jOffset = 0;
+		int currentRow = 0;
+		int currentColumn = 0;
 
 		for (int i = 0; i < 4; ++i)
 		{
-			if (i == row)
-			{
-				jOffset = -1;
-				continue;
-			}
-
-			iOffset = 0;
-
 			for (int j = 0; j < 4; ++j)
 			{
-				if (j == column)
-				{
-					iOffset = -1;
+				if (i == row || j == column)
 					continue;
-				}
 
-				m_matrix[i + iOffset][j + jOffset] = matrix.m_matrix[i][j];
+				m_matrix[currentRow][currentColumn] = matrix.m_matrix[i][j];
+				++currentColumn;
+			}
+
+			if (i != row)
+			{
+				++currentRow;
+				currentColumn = 0;
 			}
 		}
 
@@ -152,28 +145,22 @@ namespace math
 	template<math::math_type::NumericType T>
 	inline Matrix3<T>& math::Matrix3<T>::Transpose(void)
 	{
-		const T tmp[3][3] = m_matrix;
+		const Matrix3<T> tmp = *this;
 
-		m_matrix =
-		{
-			{m_matrix[0][0], tmp[1][0], tmp[2][0]},
-			{tmp[0][1], m_matrix[1][1], tmp[2][1]},
-			{tmp[0][2], tmp[1][2], m_matrix[2][2]}
-		};
+		m_matrix[0][1] = tmp.m_matrix[1][0];
+		m_matrix[0][2] = tmp.m_matrix[2][0];
+		m_matrix[1][0] = tmp.m_matrix[0][1];
+		m_matrix[1][2] = tmp.m_matrix[2][1];
+		m_matrix[2][0] = tmp.m_matrix[0][2];
+		m_matrix[2][1] = tmp.m_matrix[1][2];
 
 		return *this;
 	}
 
 	template<math::math_type::NumericType T>
-	inline Matrix3<T> Matrix3<T>::Identity(void)
+	inline Matrix3<T> math::Matrix3<T>::Identity(void)
 	{
-		return Matrix3<T>(
-			{
-				1, 0, 0,
-				0, 1, 0,
-				0, 0, 1
-			}
-		);
+		return math::Matrix3<T>();
 	}
 
 	template<math::math_type::NumericType T>
@@ -205,28 +192,22 @@ namespace math
 		*	of a 2x2 matrix
 		*/
 		
-		// Initialize matrices
 		Matrix2<T> matrix2;
-		Matrix3<T> matrixCopy(matrix);
-		Matrix3<T> result;
+		const Matrix3<T> tmp(*this);
 
-		// Iterate through 3x3 matrix
 		for (int i = 0; i < 3; ++i)
 		{
 			for (int j = 0; j < 3; ++j)
 			{
-				// Assign values for 2x2 matrix
-				matrix2.GetMatrix2(matrixCopy, i, j);
+				matrix2.GetMatrix2(tmp, i, j);
 
-				// Get the determinant of the 2x2 matrix
-				float	det = matrix2.Determinant(matrix2);
+				T determinant = matrix2.Determinant();
 
-				// Set the value for the current index equal to the determinant
-				result.m_matrix[i][j] = det;
+				m_matrix[i][j] = determinant;
 			}
 		}
 
-		return result;
+		return *this;
 	}
 
 	template<math::math_type::NumericType T>
@@ -234,12 +215,10 @@ namespace math
 	{
 		this->Minor();
 
-		m_matrix =
-		{
-			{ m_matrix[0][0], -m_matrix[0][1],  m_matrix[0][2]},
-			{-m_matrix[1][0],  m_matrix[1][1], -m_matrix[1][2]},
-			{ m_matrix[2][0], -m_matrix[2][1],  m_matrix[2][2]}
-		};
+		m_matrix[0][1] = -m_matrix[0][1];
+		m_matrix[1][0] = -m_matrix[1][0];
+		m_matrix[1][2] = -m_matrix[1][2];
+		m_matrix[2][1] = -m_matrix[2][1];
 
 		return *this;
 	}
@@ -254,7 +233,7 @@ namespace math
 	}
 
 	template<math::math_type::NumericType T>
-	inline Matrix3<T>& Matrix3<T>::Inverse(void)
+	inline Matrix3<T>& math::Matrix3<T>::Inverse(void)
 	{
 		/*
 		*	The inverse of a matrix is equal to the adjugate of the matrix
@@ -264,15 +243,17 @@ namespace math
 		T determinant = this->Determinant();
 
 		if (determinant == 0)
-			return Matrix3<T>::Identity();
+			return *this;
 
-		*this = this->Adjugate() / determinant;
+		this->Adjugate();
+
+		*this /= determinant;
 
 		return *this;
 	}
 
 	template<math::math_type::NumericType T>
-	inline Matrix3<T> Matrix3<T>::RollPitchYawRotation(Radian<T> const& thetaX, Radian<T> const& thetaY, Radian<T> const& thetaZ)
+	inline math::Matrix3<T> math::Matrix3<T>::RollPitchYawRotation(Radian<T> const& thetaX, Radian<T> const& thetaY, Radian<T> const& thetaZ)
 	{
 		// Convert radian values to float
 		static const T halfPi = PI * 0.5f;
@@ -296,50 +277,37 @@ namespace math
 		};
 
 		// Initialize & return 3x3 matrix using array
-		return LibMath::Matrix3(matrixValues);
+		return Matrix3<T>(matrixValues);
 	}
 
 	template<math::math_type::NumericType T>
 	inline Matrix3<T>& math::Matrix3<T>::operator=(const T arr[][3])
 	{
-		Matrix3<T> result;
+		m_matrix[0][0] = arr[0][0]; m_matrix[0][1] = arr[0][1]; m_matrix[0][2] = arr[0][2];
+		m_matrix[1][0] = arr[1][0]; m_matrix[1][1] = arr[1][1]; m_matrix[1][2] = arr[1][2];
+		m_matrix[2][0] = arr[2][0]; m_matrix[2][1] = arr[2][1]; m_matrix[2][2] = arr[2][2];
 
-		result.m_matrix =
-		{
-			{arr[0][0], arr[0][1], arr[0][2]},
-			{arr[1][0], arr[1][1], arr[1][2]},
-			{arr[2][0], arr[2][1], arr[2][2]}
-		};
-
-		return result;
+		return *this;
 	}
 
 	template<math::math_type::NumericType T>
 	inline Matrix3<T>& Matrix3<T>::operator=(const T arr[9])
 	{
-		Matrix3<T> result;
+		m_matrix[0][0] = arr[0]; m_matrix[0][1] = arr[1]; m_matrix[0][2] = arr[2];
+		m_matrix[1][0] = arr[3]; m_matrix[1][1] = arr[4]; m_matrix[1][2] = arr[5];
+		m_matrix[2][0] = arr[6]; m_matrix[2][1] = arr[7]; m_matrix[2][2] = arr[8];
 
-		result.m_matrix =
-		{
-			{arr[0], arr[1], arr[2]},
-			{arr[3], arr[4], arr[5]},
-			{arr[6], arr[7], arr[8]}
-		};
-
-		return result;
+		return *this;
 	}
 
 	template<math::math_type::NumericType T>
 	inline Matrix3<T> Matrix3<T>::operator+(Matrix3<T> const& matrix)
 	{
-		Matrix3<T> result;
+		Matrix3<T> result(*this);
 
-		result.m_matrix =
-		{
-			{m_matrix[0][0] + matrix.m_matrix[0][0], m_matrix[0][1] + matrix.m_matrix[0][1], m_matrix[0][2] + matrix.m_matrix[0][2]},
-			{m_matrix[1][0] + matrix.m_matrix[1][0], m_matrix[1][1] + matrix.m_matrix[1][1], m_matrix[1][2] + matrix.m_matrix[1][2]},
-			{m_matrix[2][0] + matrix.m_matrix[2][0], m_matrix[2][1] + matrix.m_matrix[2][1], m_matrix[2][2] + matrix.m_matrix[2][2]}
-		};
+		result.m_matrix[0][0] += matrix.m_matrix[0][0]; result.m_matrix[0][1] += matrix.m_matrix[0][1]; result.m_matrix[0][2] += matrix.m_matrix[0][2];
+		result.m_matrix[1][0] += matrix.m_matrix[1][0]; result.m_matrix[1][1] += matrix.m_matrix[1][1]; result.m_matrix[1][2] += matrix.m_matrix[1][2];
+		result.m_matrix[2][0] += matrix.m_matrix[2][0]; result.m_matrix[2][1] += matrix.m_matrix[2][1]; result.m_matrix[2][2] += matrix.m_matrix[2][2];
 
 		return result;
 	}
@@ -347,14 +315,11 @@ namespace math
 	template<math::math_type::NumericType T>
 	inline Matrix3<T> Matrix3<T>::operator-(Matrix3<T> const& matrix)
 	{
-		Matrix3<T> result;
+		Matrix3<T> result(*this);
 
-		result.m_matrix =
-		{
-			{m_matrix[0][0] - matrix.m_matrix[0][0], m_matrix[0][1] - matrix.m_matrix[0][1], m_matrix[0][2] - matrix.m_matrix[0][2]},
-			{m_matrix[1][0] - matrix.m_matrix[1][0], m_matrix[1][1] - matrix.m_matrix[1][1], m_matrix[1][2] - matrix.m_matrix[1][2]},
-			{m_matrix[2][0] - matrix.m_matrix[2][0], m_matrix[2][1] - matrix.m_matrix[2][1], m_matrix[2][2] - matrix.m_matrix[2][2]}
-		};
+		result.m_matrix[0][0] -= matrix.m_matrix[0][0]; result.m_matrix[0][1] -= matrix.m_matrix[0][1]; result.m_matrix[0][2] -= matrix.m_matrix[0][2];
+		result.m_matrix[1][0] -= matrix.m_matrix[1][0]; result.m_matrix[1][1] -= matrix.m_matrix[1][1]; result.m_matrix[1][2] -= matrix.m_matrix[1][2];
+		result.m_matrix[2][0] -= matrix.m_matrix[2][0]; result.m_matrix[2][1] -= matrix.m_matrix[2][1]; result.m_matrix[2][2] -= matrix.m_matrix[2][2];
 
 		return result;
 	}
@@ -363,8 +328,8 @@ namespace math
 	inline Matrix3<T> Matrix3<T>::operator*(Matrix3<T> const& matrix)
 	{
 		// Initialize null 3x3 matrix
-		Matrix3 result(0);
-
+		Matrix3<T> result((T) 0);
+		
 		// Iterate through matrix to set the result matrix equal to the sum of the 2 matrices multiplied
 		for (int i = 0; i < 3; ++i)
 		{
@@ -377,22 +342,30 @@ namespace math
 				}
 			}
 		}
-
+		
 		return result;
 	}
 
 	template<math::math_type::NumericType T>
 	inline Matrix3<T> Matrix3<T>::operator*(T scalar)
 	{
-		Matrix3<T> result;
+		Matrix3<T> result(*this);
 
-		result.m_matrix =
-		{
-			{m_matrix[0][0] * scalar, m_matrix[0][1] * scalar, m_matrix[0][2] * scalar},
-			{m_matrix[1][0] * scalar, m_matrix[1][1] * scalar, m_matrix[1][2] * scalar},
-			{m_matrix[2][0] * scalar, m_matrix[2][1] * scalar, m_matrix[2][2] * scalar},
-		}
+		result.m_matrix[0][0] *= scalar; result.m_matrix[0][1] *= scalar; result.m_matrix[0][2] *= scalar;
+		result.m_matrix[1][0] *= scalar; result.m_matrix[1][1] *= scalar; result.m_matrix[1][2] *= scalar;
+		result.m_matrix[2][0] *= scalar; result.m_matrix[2][1] *= scalar; result.m_matrix[2][2] *= scalar;
 
+		return result;
+	}
+
+	template<math::math_type::NumericType T>
+	inline Matrix3<T> Matrix3<T>::operator/(T scalar)
+	{
+		Matrix3<T> result(*this);
+
+		result.m_matrix[0][0] /= scalar; result.m_matrix[0][1] /= scalar; result.m_matrix[0][2] /= scalar;
+		result.m_matrix[1][0] /= scalar; result.m_matrix[1][1] /= scalar; result.m_matrix[1][2] /= scalar;
+		result.m_matrix[2][0] /= scalar; result.m_matrix[2][1] /= scalar; result.m_matrix[2][2] /= scalar;
 
 		return result;
 	}
@@ -425,6 +398,14 @@ namespace math
 	inline Matrix3<T>& Matrix3<T>::operator*=(T scalar)
 	{
 		*this = *this * scalar;
+
+		return *this;
+	}
+
+	template<math::math_type::NumericType T>
+	inline Matrix3<T>& Matrix3<T>::operator/=(T scalar)
+	{
+		*this = *this / scalar;
 
 		return *this;
 	}

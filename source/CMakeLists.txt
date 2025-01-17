@@ -29,13 +29,11 @@ add_library(${TARGET_NAME})
 target_sources(${TARGET_NAME} PRIVATE ${TARGET_FILES})
 
 target_include_directories(${TARGET_NAME} 
-	PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/private
-	PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/public/internal
-	PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/public/LibMath
+	PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/LibMath
 )
 
 set(LIBMATH_LIBRARY ${TARGET_NAME} PARENT_SCOPE)
-set(LIBMATH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include/public PARENT_SCOPE)
+set(LIBMATH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include/ PARENT_SCOPE)
 
 # Set compiler warning level if using MSVC
 if (MSVC)

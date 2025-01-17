@@ -7,9 +7,11 @@
 #include <glm/gtx/integer.hpp>
 #include <limits>
 
-TEST_CASE("Arithmetic", ".[all][arithmetic]")
+TEST_CASE("Arithmetic", "[.all]")
 {
 	SECTION("Absolute")
+
+
 	{
 		CHECK(math::Abs(-5)								== glm::abs(-5));
 		CHECK(math::Abs(5.0f)							== glm::abs(5.0f));

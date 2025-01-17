@@ -11,5 +11,7 @@ namespace math
 
 		template<typename T>
 		concept UnsignedType = std::is_unsigned<T>::value;
+
+
 	}
 }

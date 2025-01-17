@@ -31,9 +31,10 @@
 *	Operators
 *	- Addition			DONE
 *	- Subtraction		DONE
-*	- Multiplication	
+*	- Multiplication	DONE
 *		->	Scalar		DONE
 *		->	Matrix		DONE
+*	- Division (scalar) DONE
 *	=================================================
 */
 
@@ -51,7 +52,7 @@
 
 namespace math
 {
-	// Forward decleration for matrix3 minor function
+	// Forward declaration for matrix3 minor function
 	template<math::math_type::NumericType T>
 	class Matrix3;
 
@@ -69,7 +70,7 @@ namespace math
 		static Matrix2<T>	One(void);
 		static Matrix2<T>	Identity(T scalar);
 
-		Matrix2<T>&			GetMatrix2(Matrix3<T> matrix, int row, int column);
+		Matrix2<T>&			GetMatrix2(Matrix3<T> const& matrix, int row, int column);
 		Matrix2<T>&			Transpose(void);
 		T					Determinant(void);
 		Matrix2<T>&			Minor(void);
@@ -81,53 +82,42 @@ namespace math
 		Matrix2<T>			operator-(Matrix2<T> const& matrix);
 		Matrix2<T>			operator*(Matrix2<T> const& matrix);
 		Matrix2<T>			operator*(T const& scalar);
+		Matrix2<T>			operator/(T const& scalar);
 		Matrix2<T>&			operator+=(Matrix2<T> const& matrix);
 		Matrix2<T>&			operator-=(Matrix2<T> const& matrix);
 		Matrix2<T>&			operator*=(Matrix2<T> const& matrix);
 		Matrix2<T>&			operator*=(T const& scalar);
+		Matrix2<T>&			operator/=(T const& scalar);
 
 		bool				operator==(Matrix2<T> const& matrix) const noexcept;
 		bool				operator!=(Matrix2<T> const& matrix) const noexcept;
 
-	private:
 		T m_matrix[2][2];
 	};
 
 	template<math::math_type::NumericType T>
 	inline math::Matrix2<T>::Matrix2(void)
 	{
-		m_matrix =
-		{
-			1, 0,
-			0, 1
-		};
+		*this = Identity(1);
 	}
 
 	template<math::math_type::NumericType T>
 	inline math::Matrix2<T>::Matrix2(T value)
 	{
-		m_matrix =
-		{
-			value, 0,
-			0, value
-		};
+		*this = Identity(value);
 	}
 
 	template<math::math_type::NumericType T>
 	inline math::Matrix2<T>::Matrix2(T x, T y, T z, T w)
 	{
+		m_matrix[0][0] = x;
+		m_matrix[0][1] = y;
+		m_matrix[1][0] = z;
+		m_matrix[1][1] = w;
+
 #ifdef COLUMN_MAJOR
-		m_matrix =
-		{
-			x, z,
-			y, w
-		};
-#else
-		m_matrix =
-		{
-			x, y,
-			z, w
-		};
+		m_matrix[0][1] = z;
+		m_matrix[1][0] = y;
 #endif
 	}
 
@@ -150,30 +140,26 @@ namespace math
 	}
 
 	template<math::math_type::NumericType T>
-	inline Matrix2<T>& Matrix2<T>::GetMatrix2(Matrix3<T> matrix, int row, int column)
+	inline Matrix2<T>& Matrix2<T>::GetMatrix2(Matrix3<T> const& matrix, int row, int column)
 	{
-		int iOffset = 0;
-		int jOffset = 0;
+		int currentRow = 0;
+		int currentColumn = 0;
 
 		for (int i = 0; i < 3; ++i)
 		{
-			if (i == row)
-			{
-				jOffset = -1;
-				continue;
-			}
-
-			iOffset = 0;
-
 			for (int j = 0; j < 3; ++j)
 			{
-				if (j == column)
-				{
-					iOffset = -1;
+				if (i == row || j == column)
 					continue;
-				}
 
-				m_matrix[i + iOffset][j + jOffset] = matrix.m_matrix[i][j];
+				m_matrix[currentRow][currentColumn] = matrix.m_matrix[i][j];
+				++currentColumn;
+			}
+
+			if (i != row)
+			{
+				++currentRow;
+				currentColumn = 0;
 			}
 		}
 
@@ -185,7 +171,10 @@ namespace math
 	{
 		T tmp = m_matrix[0][1];
 
-		return Matrix2<T>(m_matrix[0][0], m_matrix[1][0], tmp, m_matrix[1][1]);
+		m_matrix[0][1] = m_matrix[1][0];
+		m_matrix[1][0] = tmp;
+
+		return *this;
 	}
 
 	template<math::math_type::NumericType T>
@@ -209,11 +198,10 @@ namespace math
 	{
 		Matrix2<T> tmp(*this);
 
-		m_matrix =
-		{
-			tmp.m_matrix[1][1], tmp.m_matrix[1][0],
-			tmp.m_matrix[0][1], tmp.m_matrix[0][0]
-		};
+		m_matrix[0][0] = tmp.m_matrix[1][1];
+		m_matrix[0][1] = tmp.m_matrix[1][0];
+		m_matrix[1][0] = tmp.m_matrix[0][1];
+		m_matrix[1][1] = tmp.m_matrix[0][0];
 
 		return *this;
 	}
@@ -223,11 +211,8 @@ namespace math
 	{
 		this->Minor();
 
-		m_matrix =
-		{
-			 m_matrix[0][0], -m_matrix[0][1],
-			-m_matrix[1][0],  m_matrix[1][1]
-		};
+		m_matrix[0][1] = -m_matrix[0][1];
+		m_matrix[1][0] = -m_matrix[1][0];
 
 		return *this;
 	}
@@ -244,17 +229,14 @@ namespace math
 	template<math::math_type::NumericType T>
 	inline Matrix2<T>& Matrix2<T>::Inverse(void)
 	{
-		Matrix2<T> tmp(*this);
-		Matrix2<T> result;
-
-		T determinant = Determinant;
-
+		T determinant = Determinant();
+		
 		if (determinant == 0)
-			return result;
+			return *this;
 
 		*this = Adjugate() / determinant;
 
-		return result;
+		return *this;
 	}
 
 	template<math::math_type::NumericType T>
@@ -296,6 +278,15 @@ namespace math
 	}
 
 	template<math::math_type::NumericType T>
+	inline Matrix2<T> Matrix2<T>::operator/(T const& scalar)
+	{
+		return Matrix2<T>(
+			m_matrix[0][0] / scalar, m_matrix[0][1] / scalar,
+			m_matrix[1][0] / scalar, m_matrix[1][1] / scalar
+		);
+	}
+
+	template<math::math_type::NumericType T>
 	inline Matrix2<T>& Matrix2<T>::operator+=(Matrix2<T> const& matrix)
 	{
 		*this = *this + matrix;
@@ -323,6 +314,14 @@ namespace math
 	inline Matrix2<T>& Matrix2<T>::operator*=(T const& scalar)
 	{
 		*this = *this * scalar;
+
+		return *this;
+	}
+
+	template<math::math_type::NumericType T>
+	inline Matrix2<T>& Matrix2<T>::operator/=(T const& scalar)
+	{
+		*this = *this / scalar;
 
 		return *this;
 	}

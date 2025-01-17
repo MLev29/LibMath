@@ -37,6 +37,9 @@ namespace math
 	template<math::math_type::NumericType T>
 	bool AlmostEqual(T val1, T val2);
 
+	template<math::math_type::NumericType T>
+	bool AlmostEqual(T val1, T val2, T epsilon);
+
 	template<math_type::NumericType T>
 	inline constexpr T Min(T const& val1, T const& val2) noexcept;
 	
@@ -80,7 +83,16 @@ bool math::AlmostEqual(T val1, T val2)
 	// Calculate difference
 	T delta = val2 - val1;
 
-	return delta <= std::numeric_limits<T>().epsilon();
+	return math::Abs(delta) <= std::numeric_limits<T>().epsilon();
+}
+
+template<math::math_type::NumericType T>
+bool math::AlmostEqual(T val1, T val2, T epsilon)
+{
+	// Calculate difference
+	T delta = val2 - val1;
+
+	return math::Abs(delta) <= epsilon;
 }
 
 template<math::math_type::NumericType T>
@@ -214,7 +226,7 @@ constexpr T math::Factorial(T const& val)
 	for (int i = result; i <= math::Abs(val); ++i)
 		result *= i;
 
-	return (result < 0) ? -result : result;
+	return (val < 0) ? -result : result;
 }
 
 namespace LibMath = math;
