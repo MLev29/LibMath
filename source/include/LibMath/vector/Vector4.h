@@ -1,7 +1,7 @@
 #pragma once
 
-#include "VariableType.hpp"
-#include "Arithmetic.h"
+#include "../VariableType.hpp"
+#include "../Arithmetic.h"
 
 #include <cmath>
 #include <limits>

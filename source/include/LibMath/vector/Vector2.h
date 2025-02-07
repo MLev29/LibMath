@@ -1,8 +1,8 @@
 #pragma once
 
-#include "VariableType.hpp"
-#include "Macros.h"
-#include "Arithmetic.h"
+#include "../VariableType.hpp"
+#include "../Macros.h"
+#include "../Arithmetic.h"
 
 #include <cmath>
 /* 

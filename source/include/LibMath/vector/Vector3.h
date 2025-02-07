@@ -1,8 +1,8 @@
 #pragma once
 
-#include "VariableType.hpp"
-#include "Arithmetic.h"
-#include "matrix/Matrix3.h"
+#include "../VariableType.hpp"
+#include "../Arithmetic.h"
+#include "../matrix/Matrix3.h"
 
 #include <cmath>
 #include <limits>
