@@ -57,25 +57,35 @@ namespace math
 		Quaternion<T>&	Normalize(void);
 		Quaternion<T>	Inverse(void) const;
 
-		Quaternion<T>	operator+(Quaternion<T> const& quat) const;
-		Quaternion<T>	operator-(Quaternion<T> const& quat) const;
-		Quaternion<T>	operator*(Quaternion<T> const& quat) const;
-		Quaternion<T>	operator/(Quaternion<T> const& quat) const;
-		Quaternion<T>	operator*(T value) const;
-		Quaternion<T>	operator/(T value) const;
-		Quaternion<T>&	operator+=(Quaternion<T> const& quat);
-		Quaternion<T>&	operator-=(Quaternion<T> const& quat);
-		Quaternion<T>&	operator*=(Quaternion<T> const& quat);
-		Quaternion<T>&	operator*=(T value);
-		Quaternion<T>&	operator/=(T value);
-		bool			operator==(Quaternion<T> const& quat) const;
-		bool			operator!=(Quaternion<T> const& quat) const;
-		T				operator[](unsigned int index) const;
-		T&				operator[](unsigned int index);
+		bool					IsPure(void) const;
+		bool					IsUnit(void) const;
+		Quaternion<T>&			Conjugate(void);
+		Quaternion<T>			Rotate(T angle, Vector3<T> const& axis) const;
+		T						Magnitude(void) const;
+		T						Dot(void) const;
+		T						Dot(Quaternion<T> const& quat) const;
+		Quaternion<T>&			Normalize(void);
+		Quaternion<T>			Inverse(void) const;
+
+		Quaternion<T>			operator+(Quaternion<T> const& quat) const;
+		Quaternion<T>			operator-(Quaternion<T> const& quat) const;
+		Quaternion<T>			operator*(Quaternion<T> const& quat) const;
+		Quaternion<T>			operator/(Quaternion<T> const& quat) const;
+		Quaternion<T>			operator*(T value) const;
+		Quaternion<T>			operator/(T value) const;
+		Quaternion<T>&			operator+=(Quaternion<T> const& quat);
+		Quaternion<T>&			operator-=(Quaternion<T> const& quat);
+		Quaternion<T>&			operator*=(Quaternion<T> const& quat);
+		Quaternion<T>&			operator*=(T value);
+		Quaternion<T>&			operator/=(T value);
+		bool					operator==(Quaternion<T> const& quat) const;
+		bool					operator!=(Quaternion<T> const& quat) const;
+		T						operator[](unsigned int index) const;
+		T&						operator[](unsigned int index);
 
 	private:
-		Vector3<T> m_imaginary;
-		T m_w;
+		Vector3<T>				m_imaginary;
+		T						m_w;
 	};
 
 	template<math::math_type::NumericType T>
