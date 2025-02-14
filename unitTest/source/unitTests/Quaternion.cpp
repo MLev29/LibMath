@@ -30,6 +30,9 @@ TEST_CASE("Quaternion", "[.all][Quaternion]")
 		CHECK_QUAT(math::Quaternion<float>(1.0f, 2.0f, 3.0f, 4.0f).Conjugate(), glm::conjugate(glm::quat(1.0f, 2.0f, 3.0f, 4.0f)));
 		CHECK_QUAT(math::Quaternion<float>(1.0f, -2.0f, -3.5f, 0.0f).Conjugate(), glm::conjugate(glm::quat(1.0f, -2.0f, -3.5f, 0.0f)));
 
+		// Magnitude Squared
+		CHECK(math::Quaternion<float>(1.0f, 2.0f, 3.0f, 4.0f).Dot(math::Quaternion<float>(1.0f, 2.0f, 3.0f, 4.0f)) == glm::dot(glm::quat(1.0f, 2.0f, 3.0f, 4.0f), glm::quat(1.0f, 2.0f, 3.0f, 4.0f)));
+
 		// Magnitude
 		CHECK(math::Quaternion<float>(1.0f, 2.0f, 3.0f, 4.0f).Magnitude() == glm::length(glm::quat(1.0f, 2.0f, 3.0f, 4.0f)));
 		CHECK(math::Quaternion<float>(-5.0f, 2.3f, -10.0f, 4.0f).Magnitude() == glm::length(glm::quat(-5.0f, 2.3f, -10.0f, 4.0f)));

@@ -22,6 +22,7 @@
 *	- Conjugate				DONE
 *	- Rotate point			
 *	- Magnitude				DONE
+*	- Dot					DONE
 *	- Normalize				DONE
 *	- Inverse				DONE
 *
@@ -167,6 +168,24 @@ namespace math
 				m_imaginary.Dot(m_imaginary) +
 				m_w * m_w
 			);
+	}
+
+	template<math::math_type::NumericType T>
+	inline T Quaternion<T>::Dot(void) const
+	{
+		return T(
+			m_imaginary.Dot(m_imaginary) +
+			m_w * m_w
+		);
+	}
+
+	template<math::math_type::NumericType T>
+	inline T Quaternion<T>::Dot(Quaternion<T> const& quat) const
+	{
+		return T(
+			m_imaginary.Dot(quat.m_imaginary) +
+			m_w * quat.m_w
+		);
 	}
 
 	template<math::math_type::NumericType T>
