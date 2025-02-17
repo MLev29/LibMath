@@ -230,12 +230,15 @@ namespace math
 	template<math::math_type::NumericType T>
 	inline Quaternion<T> Quaternion<T>::operator*(Quaternion<T> const& quat) const
 	{
+		/*
+		*	Quaternion multiplication formula:
+		*	result = (w1 * w2) - dot(ijk1, ijk2) + (w1 * ijk2) + (w2 * ijk1) + cross(ijk1,ijk2)
+		*/
+
 		Quaternion<T> result;
 
 		result.m_w = (m_w * quat.m_w) - m_imaginary.Dot(quat.m_imaginary);
-		result.m_imaginary[0] = (m_w * quat.m_imaginary[0]) + (quat.m_w * m_imaginary[0]) + m_imaginary[1] * quat.m_imaginary[2] - m_imaginary[2] * quat.m_imaginary[1]; // i
-		result.m_imaginary[1] = (m_w * quat.m_imaginary[1]) + (quat.m_w * m_imaginary[1]) + m_imaginary[2] * quat.m_imaginary[0] - m_imaginary[0] * quat.m_imaginary[2]; // j
-		result.m_imaginary[2] = (m_w * quat.m_imaginary[2]) + (quat.m_w * m_imaginary[2]) + m_imaginary[0] * quat.m_imaginary[1] - m_imaginary[1] * quat.m_imaginary[0]; // k
+		result.m_imaginary = quat.m_imaginary * m_w + m_imaginary * quat.m_w + m_imaginary.Cross(quat.m_imaginary);
 
 		return result;
 	}
