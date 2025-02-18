@@ -1,13 +1,12 @@
 #pragma once
 
-#include "angle/Radians.h"
-#include "Arithmetic.h"
-#include "Macros.h"
-#include "VariableType.hpp"
-
-#include "matrix/Matrix2.h"
-
+#include "../angle/Radians.h"
+#include "../Arithmetic.h"
+#include "../Macros.h"
+#include "../VariableType.hpp"
+#include "Matrix2.h"
 #include "Matrix4.h"
+
 #include <cmath>
 
 /*

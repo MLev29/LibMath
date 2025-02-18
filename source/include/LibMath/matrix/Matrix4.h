@@ -1,12 +1,12 @@
 #pragma once
 
-#include "VariableType.hpp"
-#include "Macros.h"
-#include "Arithmetic.h"
-#include "angle/Radians.h"
-#include "matrix/Matrix3.h"
-#include "vector/Vector3.h"
-#include "Quaternion.h"
+#include "../VariableType.hpp"
+#include "../Macros.h"
+#include "../Arithmetic.h"
+#include "../angle/Radians.h"
+#include "../vector/Vector3.h"
+#include "../Quaternion.h"
+#include "Matrix3.h"
 
 #include <cmath>
 
@@ -30,7 +30,10 @@
 *	Transformation
 *	- Scale						DONE
 *	- Translation				DONE
-*	- Rotation					
+*	- Rotation
+*
+*	- Ortho						TESTING REQUIRED
+*	- Perspective				TESTING REQUIRED
 *
 *	Operators
 *	- Addition					DONE
@@ -74,6 +77,9 @@ namespace math
 				Matrix4<T>&		Translate(T x, T y, T z, bool rowMajor = false);
 				Matrix4<T>		Transform(Quaternion<T> const& quat);
 
+		static	Matrix4<T>		Ortho(T left, T right, T bottom, T top, T zNear, T zFar);
+		static	Matrix4<T>		Perspective(math::Vector3<T> const& position, math::Vector3<T> const& center, math::Vector3<T> const& up);
+
 				Matrix4<T>&		operator=(const T arr[16]);
 				Matrix4<T>&		operator=(const T arr[][4]);
 				Matrix4<T>		operator+(Matrix4<T> const& matrix);
@@ -87,8 +93,8 @@ namespace math
 				Matrix4<T>&		operator*=(T scalar);
 				Matrix4<T>&		operator/=(T scalar);
 
-				bool			operator==(Matrix4<T> const& matrix);
-				bool			operator!=(Matrix4<T> const& matrix);
+				bool			operator==(Matrix4<T> const& matrix) const noexcept;
+				bool			operator!=(Matrix4<T> const& matrix) const noexcept;
 
 		T m_matrix[4][4];
 	};
@@ -328,6 +334,50 @@ namespace math
 	}
 
 	template<math::math_type::NumericType T>
+	inline Matrix4<T> Matrix4<T>::Ortho(T left, T right, T bottom, T top, T zNear, T zFar)
+	{
+		Matrix4<T> result;
+		const T two = static_cast<T>(2.0f);
+
+		result.m_matrix[0][0] = two / (right - left);
+		result.m_matrix[1][1] = two / (top - bottom);
+		result.m_matrix[2][2] = -two / (zFar - zNear);
+		result.m_matrix[3][0] = -(right + left) / (right - left);
+		result.m_matrix[3][1] = -(top + bottom) / (top - bottom);
+		result.m_matrix[3][2] = -(zFar + zNear) / (zFar - zNear);
+
+		return result;
+	}
+
+	template<math::math_type::NumericType T>
+	inline Matrix4<T> Matrix4<T>::Perspective(math::Vector3<T> const& position, math::Vector3<T> const& center, math::Vector3<T> const& up)
+	{
+		Matrix4<T> result;
+
+		Vector3<T> forwardVec3 = (center - position).Normalize();
+		Vector3<T> rightVec3 = (forwardVec3.Cross(up)).Normalize();
+		Vector3<T> upVec3 = rightVec3.Cross(forwardVec3);
+
+		result.m_matrix[0][0] = rightVec3[0];
+		result.m_matrix[1][0] = rightVec3[1];
+		result.m_matrix[2][0] = rightVec3[2];
+
+		result.m_matrix[0][1] = upVec3[0];
+		result.m_matrix[1][1] = upVec3[1];
+		result.m_matrix[2][1] = upVec3[2];
+
+		result.m_matrix[0][2] = -forwardVec3[0];
+		result.m_matrix[1][2] = -forwardVec3[1];
+		result.m_matrix[2][2] = -forwardVec3[2];
+
+		result.m_matrix[3][0] = -(rightVec3.Dot(position));
+		result.m_matrix[3][1] = -(upVec3.Dot(position));
+		result.m_matrix[3][2] = forwardVec3.Dot(position);
+
+		return result;
+	}
+
+	template<math::math_type::NumericType T>
 	inline Matrix4<T>& math::Matrix4<T>::operator=(const T arr[16])
 	{
 		m_matrix[0][0] = arr[0]; m_matrix[1][0] =  arr[1]; m_matrix[2][0] =  arr[2]; m_matrix[3][0] =  arr[3];
@@ -481,7 +531,7 @@ namespace math
 	}
 
 	template<math::math_type::NumericType T>
-	inline bool Matrix4<T>::operator==(Matrix4<T> const& matrix)
+	inline bool Matrix4<T>::operator==(Matrix4<T> const& matrix) const noexcept
 	{
 		for (int i = 0; i < 4; ++i)
 		{
@@ -496,7 +546,7 @@ namespace math
 	}
 
 	template<math::math_type::NumericType T>
-	inline bool Matrix4<T>::operator!=(Matrix4<T> const& matrix)
+	inline bool Matrix4<T>::operator!=(Matrix4<T> const& matrix) const noexcept
 	{
 		return !(*this == matrix);
 	}
