@@ -46,7 +46,12 @@ TEST_CASE("Quaternion", "[.all][Quaternion]")
 		CHECK_QUAT(math::Quaternion(-5.0f, 2.3f, -10.0f, 4.0f).Inverse(), glm::inverse(glm::quat(-5.0f, 2.3f, -10.0f, 4.0f)));
 
 		// Rotate via an angle & axis
-		CHECK_QUAT(math::Quaternion<float>::AngleAxis(45.0f * DEG2RAD, math::Vector3(0.0f, 1.0f, 0.0f)), glm::angleAxis(45.0f * DEG2RAD, glm::vec3(0.0f, 1.0f, 0.0f)));
+		CHECK_QUAT(math::Quaternion<float>::AngleAxis(45.0f * DEG2RAD, math::Vector3(1.0f, 0.0f, 0.0f)), glm::angleAxis(45.0f * DEG2RAD, glm::vec3(1.0f, 0.0f, 0.0f)));
+		CHECK_QUAT(math::Quaternion<float>::AngleAxis(90.0f * DEG2RAD, math::Vector3(0.0f, 1.0f, 0.0f)), glm::angleAxis(90.0f * DEG2RAD, glm::vec3(0.0f, 1.0f, 0.0f)));
+		CHECK_QUAT(math::Quaternion<float>::AngleAxis(270.0f * DEG2RAD, math::Vector3(0.0f, 0.0f, 1.0f)), glm::angleAxis(270.0f * DEG2RAD, glm::vec3(0.0f, 0.0f, 1.0f)));
+		CHECK_QUAT(math::Quaternion<float>::AngleAxis(450.0f * DEG2RAD, math::Vector3(0.0f, 0.0f, 1.0f)), glm::angleAxis(450.0f * DEG2RAD, glm::vec3(0.0f, 0.0f, 1.0f)));
+		CHECK_QUAT(math::Quaternion<float>::AngleAxis(-30.0f * DEG2RAD, math::Vector3(0.0f, 0.0f, 1.0f)), glm::angleAxis(-30.0f * DEG2RAD, glm::vec3(0.0f, 0.0f, 1.0f)));
+		CHECK_QUAT(math::Quaternion<float>::AngleAxis(30.0f * DEG2RAD, math::Vector3(0.0f, 1.0f, 1.0f)), glm::angleAxis(30.0f * DEG2RAD, glm::vec3(0.0f, 1.0f, 1.0f)));
 	}
 
 	SECTION("Operators")
