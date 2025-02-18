@@ -45,11 +45,8 @@ TEST_CASE("Quaternion", "[.all][Quaternion]")
 		CHECK_QUAT(math::Quaternion(1.0f, 2.0f, 3.0f, 4.0f).Inverse(), glm::inverse(glm::quat(1.0f, 2.0f, 3.0f, 4.0f)));
 		CHECK_QUAT(math::Quaternion(-5.0f, 2.3f, -10.0f, 4.0f).Inverse(), glm::inverse(glm::quat(-5.0f, 2.3f, -10.0f, 4.0f)));
 
-		// Rotation Quaternion
-		CHECK_QUAT(
-			math::Quaternion(1.0f, 1.0f, 1.0f, 1.0f).Rotate(90.0f, math::Vector3{0.0f, 0.0f, 1.0f}),
-			glm::rotate(glm::quat(1.0f, 1.0f, 1.0f, 1.0f), 90.0f, glm::vec3(0.0f, 0.0f, 1.0f))
-			);
+		// Rotate via an angle & axis
+		CHECK_QUAT(math::Quaternion<float>::AngleAxis(45.0f * DEG2RAD, math::Vector3(0.0f, 1.0f, 0.0f)), glm::angleAxis(45.0f * DEG2RAD, glm::vec3(0.0f, 1.0f, 0.0f)));
 	}
 
 	SECTION("Operators")

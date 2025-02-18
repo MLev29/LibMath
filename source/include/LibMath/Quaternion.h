@@ -20,7 +20,7 @@
 *	- IsPure				DONE
 *	- IsUnit				DONE
 *	- Conjugate				DONE
-*	- Rotate point			
+*	- Angle axis			DONE
 *	- Magnitude				DONE
 *	- Dot					DONE
 *	- Normalize				DONE
@@ -43,20 +43,14 @@ namespace math
 	class Quaternion
 	{
 	public:
-						Quaternion(void);
-						Quaternion(T value);
-						Quaternion(T w, T x, T y, T z);
-						Quaternion(T w, Vector3<T> const& imaginary);
+								Quaternion(void);
+								Quaternion(T value);
+								Quaternion(T w, T x, T y, T z);
+								Quaternion(T w, Vector3<T> const& imaginary);
 
-						~Quaternion(void) = default;
+								~Quaternion(void) = default;
 
-		bool			IsPure(void) const;
-		bool			IsUnit(void) const;
-		Quaternion<T>&	Conjugate(void);
-		Quaternion<T>	Rotate(T angle, Vector3<T> const& axis) const;
-		T				Magnitude(void) const;
-		Quaternion<T>&	Normalize(void);
-		Quaternion<T>	Inverse(void) const;
+		static Quaternion<T>	AngleAxis(T angleRad, math::Vector3<T> axis);
 
 		bool					IsPure(void) const;
 		bool					IsUnit(void) const;
@@ -111,6 +105,15 @@ namespace math
 	inline Quaternion<T>::Quaternion(T w, Vector3<T> const& imaginary)
 		: m_imaginary(imaginary), m_w(w)
 	{
+	}
+
+	template<math::math_type::NumericType T>
+	inline Quaternion<T> Quaternion<T>::AngleAxis(T angleRad, math::Vector3<T> axis)
+	{
+		return math::Quaternion<T>(
+			cosf((float) angleRad * 0.5f),
+			axis * sinf((float) angleRad * 0.5f)
+		);
 	}
 
 	template<math::math_type::NumericType T>
