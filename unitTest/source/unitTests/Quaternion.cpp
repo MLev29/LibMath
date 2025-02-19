@@ -78,7 +78,7 @@ TEST_CASE("Quaternion", "[.all][Quaternion]")
 		CHECK_QUAT((quat1 * quat2), (quat1Glm * quat2Glm));
 
 		// Operator / quaternion
-		//CHECK_QUAT((quat1 / quat2), (quat1Glm / quat2Glm));
+		CHECK_QUAT((quat1 / quat2), (quat1Glm * glm::inverse(quat2Glm)));
 
 		// Operator +=
 		quat1 += quat2;

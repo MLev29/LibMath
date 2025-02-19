@@ -249,18 +249,7 @@ namespace math
 	template<math::math_type::NumericType T>
 	inline Quaternion<T> Quaternion<T>::operator/(Quaternion<T> const& quat) const
 	{
-		Quaternion<T> result(*this);
-		Quaternion<T> resultDenom(quat);
-		Quaternion<T> conjugate(quat);
-		conjugate.Conjugate();
-
-		result = result * conjugate;
-		resultDenom = (resultDenom * conjugate) * 0.1f;
-
-		result.m_w *= resultDenom.m_w;
-		result.m_imaginary *= resultDenom.m_imaginary;
-
-		return result;
+		return Quaternion<T>(*this * quat.Inverse());
 	}
 
 	template<math::math_type::NumericType T>
