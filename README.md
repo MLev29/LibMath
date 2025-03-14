@@ -21,6 +21,8 @@ Math library programmed in C++ built for graphics & game engine programming.
 1. Clone the repository
 2. Add a `build/` folder in the root of the project
 3. Open the terminal in the `build/` folder and run the cmake command `cmake ..`
+4. In the `build/` folder a `.sln` file should appear, open it & build the solution. This should create a `.lib` file for the math library
+5. Copy the `.lib` and the folder `LibMath/` in `source/include/` into your project
 
 ## Planned Features
 - 2D & 3D Geometry types (box, circle) & intersection checks
