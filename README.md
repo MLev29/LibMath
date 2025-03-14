@@ -17,7 +17,7 @@ Math library programmed in C++ built for graphics & game engine programming.
 - The math library uses template types to support all arithmetic types.
 - Library is compiled as a static lib (`.lib`) via cmake
 
-## Install / Build
+## Install & Build
 1. Clone the repository
 2. Add a `build/` folder in the root of the project
 3. Open the terminal in the `build/` folder and run the cmake command `cmake ..`
